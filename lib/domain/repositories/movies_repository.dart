@@ -1,5 +1,5 @@
 import 'package:cuevanax/domain/entities/movie.dart';
 
-abstract class MovieRepository {
+abstract class MoviesRepository {
   Future<List<Movie>> getNowPlaying({int page = 1});
 }
