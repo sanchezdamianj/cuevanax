@@ -20,6 +20,7 @@ dependencies:
   flutter_riverpod: ^2.4.8
   card_swiper: ^3.0.1
   animate_do: ^3.1.2
+  intl: ^0.18.1
 
 dev_dependencies:
   flutter_test:
