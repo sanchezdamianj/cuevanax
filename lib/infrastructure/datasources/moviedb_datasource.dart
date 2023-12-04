@@ -5,6 +5,7 @@ import 'package:cuevanax/config/constants/enviroments.dart';
 import 'package:cuevanax/domain/datasources/movies_datasource.dart';
 
 import '../../domain/entities/movie.dart';
+import '../models/moviedb/movie_details.dart';
 
 class MoviedbDatasource extends MovieDatasource {
   final dio = Dio(BaseOptions(
@@ -50,5 +51,19 @@ class MoviedbDatasource extends MovieDatasource {
     final response =
         await dio.get('/movie/top_rated', queryParameters: {'page': page});
     return _jsonToMovies(response.data);
+  }
+
+  @override
+  Future<Movie> getMovieById(String movieId) async {
+    final response = await dio.get('/movie/$movieId');
+    if (response.statusCode != 200) {
+      throw Exception('This movie is not an a Database');
+    }
+
+    final movieDetails = MovieDetails.fromJson(response.data);
+
+    final Movie movie = MovieMapper.movieDetailsToEntity(movieDetails);
+
+    return movie;
   }
 }

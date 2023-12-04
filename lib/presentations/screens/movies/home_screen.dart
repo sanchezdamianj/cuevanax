@@ -35,6 +35,9 @@ class _HomeViewState extends ConsumerState<_HomeView> {
 
   @override
   Widget build(BuildContext context) {
+    final initalLoading = ref.watch(initialLoadingProvider);
+    if (initalLoading) return const FullScreenLoader();
+
     final slideShowMovies = ref.watch(moviesSlideshowProvider);
     final nowPlayingMovies = ref.watch(nowPlayingMoviesProvider);
     final popularMovies = ref.watch(popularMoviesProvider);
@@ -45,59 +48,62 @@ class _HomeViewState extends ConsumerState<_HomeView> {
       return const Center(child: CircularProgressIndicator());
     }
 
-    return CustomScrollView(slivers: [
-      const SliverAppBar(
-        floating: true,
-        flexibleSpace: FlexibleSpaceBar(
-          title: CustomAppBar(),
+    return Visibility(
+      visible: !initalLoading,
+      child: CustomScrollView(slivers: [
+        const SliverAppBar(
+          floating: true,
+          flexibleSpace: FlexibleSpaceBar(
+            title: CustomAppBar(),
+          ),
         ),
-      ),
-      SliverList(
-          delegate: SliverChildBuilderDelegate(
-        (context, index) {
-          return Column(
-            children: [
-              MoviesSlideshow(movies: slideShowMovies),
-              MovieHorizontalListView(
-                movies: nowPlayingMovies,
-                title: 'In Cinema',
-                subtitle: 'Monday ',
-                loadNextPage: () {
-                  ref.read(nowPlayingMoviesProvider.notifier).loadNextPage();
-                },
-              ),
-              MovieHorizontalListView(
-                movies: popularMovies,
-                title: 'Populars',
-                subtitle: 'Best movies ',
-                loadNextPage: () {
-                  ref.read(popularMoviesProvider.notifier).loadNextPage();
-                },
-              ),
-              MovieHorizontalListView(
-                movies: upcomingMovies,
-                title: 'Upcoming',
-                subtitle: 'In this Month ',
-                loadNextPage: () {
-                  ref.read(upcomingMoviesProvider.notifier).loadNextPage();
-                },
-              ),
-              MovieHorizontalListView(
-                movies: topRatedMovies,
-                title: 'Top Rated',
-                subtitle: 'Most Ranked ',
-                loadNextPage: () {
-                  ref.read(topRatedMoviesProvider.notifier).loadNextPage();
-                },
-              ),
-              const SizedBox(
-                height: 10,
-              )
-            ],
-          );
-        },
-        childCount: 1,
-      ))
-    ]);
+        SliverList(
+            delegate: SliverChildBuilderDelegate(
+          (context, index) {
+            return Column(
+              children: [
+                MoviesSlideshow(movies: slideShowMovies),
+                MovieHorizontalListView(
+                  movies: nowPlayingMovies,
+                  title: 'In Cinema',
+                  subtitle: 'Monday ',
+                  loadNextPage: () {
+                    ref.read(nowPlayingMoviesProvider.notifier).loadNextPage();
+                  },
+                ),
+                MovieHorizontalListView(
+                  movies: popularMovies,
+                  title: 'Populars',
+                  subtitle: 'Best movies ',
+                  loadNextPage: () {
+                    ref.read(popularMoviesProvider.notifier).loadNextPage();
+                  },
+                ),
+                MovieHorizontalListView(
+                  movies: upcomingMovies,
+                  title: 'Upcoming',
+                  subtitle: 'In this Month ',
+                  loadNextPage: () {
+                    ref.read(upcomingMoviesProvider.notifier).loadNextPage();
+                  },
+                ),
+                MovieHorizontalListView(
+                  movies: topRatedMovies,
+                  title: 'Top Rated',
+                  subtitle: 'Most Ranked ',
+                  loadNextPage: () {
+                    ref.read(topRatedMoviesProvider.notifier).loadNextPage();
+                  },
+                ),
+                const SizedBox(
+                  height: 10,
+                )
+              ],
+            );
+          },
+          childCount: 1,
+        ))
+      ]),
+    );
   }
 }
