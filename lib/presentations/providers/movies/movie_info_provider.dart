@@ -19,7 +19,7 @@ class MovieMapNotifier extends StateNotifier<Map<String, Movie>> {
   Future<void> loadMovie(String movieId) async {
     // if it was loaded before, don't do anything
     if (state[movieId] != null) return;
-    print('http request sent for $movieId');
+
     //if was not loaded before, just call the api
     final movie = await getMovie(movieId);
     state = {...state, movieId: movie};
