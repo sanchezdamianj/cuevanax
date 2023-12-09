@@ -1,10 +1,15 @@
+import 'package:cuevanax/domain/entities/movie.dart';
+import 'package:cuevanax/presentations/delegates/serach_movie_delegate.dart';
+import 'package:cuevanax/presentations/providers/providers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
-class CustomAppBar extends StatelessWidget {
+class CustomAppBar extends ConsumerWidget {
   const CustomAppBar({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = Theme.of(context).colorScheme;
     final titleStyle = Theme.of(context).textTheme.titleMedium;
 
@@ -24,7 +29,24 @@ class CustomAppBar extends StatelessWidget {
                   ),
                   Text('Cuevanax', style: titleStyle),
                   const Spacer(),
-                  IconButton(onPressed: () {}, icon: const Icon(Icons.search))
+                  IconButton(
+                      onPressed: () {
+                        final searchedMovies = ref.read(searchedMoviesProvider);
+                        final searchQuery = ref.read(searchQueryProvider);
+                        showSearch<Movie?>(
+                            query: searchQuery,
+                            context: context,
+                            delegate: SearchMovieDelegate(
+                              initialMovies: searchedMovies,
+                              searchMovies: ref
+                                  .read(searchedMoviesProvider.notifier)
+                                  .searchMoviesByQuery,
+                            )).then((movie) {
+                          if (movie == null) return;
+                          context.push('/movie/${movie.id}');
+                        });
+                      },
+                      icon: const Icon(Icons.search))
                 ],
               ),
             )));
