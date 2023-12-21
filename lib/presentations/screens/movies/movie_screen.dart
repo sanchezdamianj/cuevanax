@@ -180,6 +180,12 @@ class _ActorsByMovie extends ConsumerWidget {
   }
 }
 
+final isFavoriteProvider =
+    FutureProvider.family.autoDispose((ref, int movieId) async {
+  final localStorageRepository = ref.watch(localStorageRepositoryProvider);
+  return localStorageRepository.isFavorite(movieId);
+});
+
 class _CustomSliverAppBar extends ConsumerWidget {
   final Movie movie;
   const _CustomSliverAppBar({required this.movie});
@@ -187,7 +193,8 @@ class _CustomSliverAppBar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final size = MediaQuery.of(context).size;
-    bool isFavorite = false;
+
+    final AsyncValue isFavoriteFuture = ref.watch(isFavoriteProvider(movie.id));
 
     return SliverAppBar(
       backgroundColor: Colors.black,
@@ -198,10 +205,21 @@ class _CustomSliverAppBar extends ConsumerWidget {
         IconButton(
             onPressed: () {
               ref.watch(localStorageRepositoryProvider).toggleFavorite(movie);
+              //TO FIX: the icon is not getting cleaned when tap on it, to fix it use a provider
+              ref.invalidate(isFavoriteProvider(movie.id));
             },
-            icon: isFavorite
-                ? const Icon(Icons.favorite)
-                : const Icon(Icons.favorite_border)),
+            icon: isFavoriteFuture.when(
+              loading: () => const CircularProgressIndicator(
+                strokeWidth: 2,
+              ),
+              data: (isFavorite) => isFavorite
+                  ? const Icon(
+                      Icons.favorite_rounded,
+                      color: Colors.red,
+                    )
+                  : const Icon(Icons.favorite_border),
+              error: (_, __) => throw UnimplementedError(),
+            ))
       ],
       flexibleSpace: FlexibleSpaceBar(
         titlePadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
