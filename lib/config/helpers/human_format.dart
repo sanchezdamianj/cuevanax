@@ -9,4 +9,9 @@ class HumanFormat {
     ).format(number);
     return formattedNumber;
   }
+
+  static String shortDate(DateTime date) {
+    final format = DateFormat.yMMMd('en');
+    return format.format(date);
+  }
 }

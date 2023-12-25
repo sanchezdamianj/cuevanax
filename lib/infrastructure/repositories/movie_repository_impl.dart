@@ -1,5 +1,6 @@
 import 'package:cuevanax/domain/datasources/movies_datasource.dart';
 import 'package:cuevanax/domain/entities/movie.dart';
+import 'package:cuevanax/domain/entities/video.dart';
 import 'package:cuevanax/domain/repositories/movies_repository.dart';
 
 class MovieRepositoryImpl extends MoviesRepository {
@@ -34,5 +35,15 @@ class MovieRepositoryImpl extends MoviesRepository {
   @override
   Future<List<Movie>> searchMovies(String query) {
     return datasource.searchMovies(query);
+  }
+
+  @override
+  Future<List<Movie>> getSimilarMovies(int movieId) {
+    return datasource.getSimilarMovies(movieId);
+  }
+
+  @override
+  Future<List<Video>> getYoutubeVideosById(int movieId) {
+    return datasource.getYoutubeVideosById(movieId);
   }
 }

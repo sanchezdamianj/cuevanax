@@ -1,5 +1,8 @@
+import 'package:cuevanax/domain/entities/video.dart';
 import 'package:cuevanax/infrastructure/mappers/movie_mapper.dart';
+import 'package:cuevanax/infrastructure/mappers/video_mapper.dart';
 import 'package:cuevanax/infrastructure/models/moviedb/moviedb_response.dart';
+import 'package:cuevanax/infrastructure/models/moviedb/moviedb_videos.dart';
 import 'package:dio/dio.dart';
 import 'package:cuevanax/config/constants/enviroments.dart';
 import 'package:cuevanax/domain/datasources/movies_datasource.dart';
@@ -19,7 +22,7 @@ class MoviedbDatasource extends MovieDatasource {
   List<Movie> _jsonToMovies(Map<String, dynamic> json) {
     final movieDBResponse = MovieDbResponse.fromJson(json);
     final List<Movie> movies = movieDBResponse.results
-        .where((moviedb) => moviedb.posterPath != 'no-poster')
+        .where((moviedb) => moviedb.posterPath != '')
         .map((e) => MovieMapper.movieDBToEntity(e))
         .toList();
     return movies;
@@ -75,5 +78,26 @@ class MoviedbDatasource extends MovieDatasource {
     });
 
     return _jsonToMovies(response.data);
+  }
+
+  @override
+  Future<List<Movie>> getSimilarMovies(int movieId) async {
+    final response = await dio.get('/movie/$movieId/similar');
+    return _jsonToMovies(response.data);
+  }
+
+  @override
+  Future<List<Video>> getYoutubeVideosById(int movieId) async {
+    final response = await dio.get('/movie/$movieId/videos');
+    final moviedbVideosResponse = MoviedbVideosResponse.fromJson(response.data);
+    final videos = <Video>[];
+
+    for (final moviedbVideo in moviedbVideosResponse.results) {
+      if (moviedbVideo.site == 'YouTube') {
+        final video = VideoMapper.moviedbVideoToEntity(moviedbVideo);
+        videos.add(video);
+      }
+    }
+    return videos;
   }
 }

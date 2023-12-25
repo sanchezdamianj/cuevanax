@@ -1,12 +1,9 @@
-import 'package:animate_do/animate_do.dart';
-import 'package:cuevanax/config/helpers/human_format.dart';
-import 'package:cuevanax/domain/entities/movie.dart';
+import 'package:cuevanax/presentations/providers/storage/favorites_movies_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
-import '../../providers/providers.dart';
-
-//initState() solo las primeras 10 movies
+import '../../widgets/movies/movie_masonry.dart';
 
 class FavoritesView extends ConsumerStatefulWidget {
   const FavoritesView({super.key});
@@ -15,88 +12,61 @@ class FavoritesView extends ConsumerStatefulWidget {
   FavoritesViewState createState() => FavoritesViewState();
 }
 
-class FavoritesViewState extends ConsumerState<FavoritesView> {
+class FavoritesViewState extends ConsumerState<FavoritesView>
+    with AutomaticKeepAliveClientMixin {
+  bool isLastPage = false;
+  bool isLoading = false;
+
   @override
   void initState() {
     super.initState();
-    ref.read(favoriteMoviesProvider.notifier).loadNextPage();
+
+    loadNextPage();
+  }
+
+  void loadNextPage() async {
+    if (isLoading || isLastPage) return;
+    isLoading = true;
+
+    final movies =
+        await ref.read(favoriteMoviesProvider.notifier).loadNextPage();
+    isLoading = false;
+
+    if (movies.isEmpty) {
+      isLastPage = true;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+
     final favoriteMovies = ref.watch(favoriteMoviesProvider).values.toList();
 
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text('Favorites'),
-        ),
-        body: ListView.builder(
-            itemCount: favoriteMovies.length,
-            itemBuilder: (context, index) {
-              return _MovieItem(movie: favoriteMovies[index]);
-            }));
-  }
-}
-
-class _MovieItem extends StatelessWidget {
-  final Movie movie;
-  // final Function onMovieSelected;
-  const _MovieItem({
-    required this.movie,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final textStyles = Theme.of(context).textTheme;
-    final size = MediaQuery.of(context).size;
-
-    return GestureDetector(
-      onTap: () {
-        // onMovieSelected(movie);
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-        child: Row(
+    if (favoriteMovies.isEmpty) {
+      final colors = Theme.of(context).colorScheme;
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(
-              width: size.width * 0.2,
-              child: ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: Image.network(movie.posterPath,
-                      loadingBuilder: (context, child, loadingProgress) =>
-                          FadeIn(child: child))),
-            ),
-            const SizedBox(
-              width: 10,
-            ),
-            SizedBox(
-              width: size.width * 0.7,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(movie.title, style: textStyles.titleMedium),
-                  (movie.overview.length > 100)
-                      ? Text('${movie.overview.substring(0, 100)}...')
-                      : Text(movie.overview),
-                  Row(children: [
-                    Icon(
-                      Icons.star_half_rounded,
-                      color: Colors.yellow.shade800,
-                    ),
-                    const SizedBox(
-                      width: 3,
-                    ),
-                    Text(HumanFormat.number(movie.voteAverage, 1),
-                        style: textStyles.bodySmall!.copyWith(
-                          color: Colors.yellow.shade900,
-                        )),
-                  ])
-                ],
-              ),
-            )
+            Icon(Icons.favorite_outline_sharp, size: 60, color: colors.primary),
+            Text('Ohhh no!!',
+                style: TextStyle(fontSize: 30, color: colors.primary)),
+            const Text('No favs movies', style: TextStyle(fontSize: 20)),
+            const SizedBox(height: 20),
+            FilledButton.tonal(
+                onPressed: () => context.go('/home/0'),
+                child: const Text('Lets go!')),
           ],
         ),
-      ),
-    );
+      );
+    }
+
+    return Scaffold(
+        body: MovieMasonry(loadNextPage: loadNextPage, movies: favoriteMovies));
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

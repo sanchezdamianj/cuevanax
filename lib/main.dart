@@ -5,14 +5,11 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:cuevanax/config/router/app_router.dart';
 import 'package:cuevanax/config/theme/app_theme.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 Future<void> main() async {
-  try {
-    await dotenv.load(fileName: '.env');
-  } catch (e) {
-    print('Error loading .env file: $e');
-  }
-
+  await dotenv.load(fileName: '.env');
+  await initializeDateFormatting('en_US', null);
   runApp(
     const ProviderScope(child: MyApp()),
   );
