@@ -16,7 +16,7 @@ Guidelines:
 
 ## A little bit of the app
 
-![Example of the app](example.mp4)
+![GIF](example.gif)
 
 ## Instalation
 
