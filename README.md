@@ -1,6 +1,8 @@
-# cuevanax
+# CuevanaX
 
-A new Flutter project.
+
+## Descripción
+Is an app to see a lot of movies, and its details.
 
 ## Getting Started
 
@@ -10,3 +12,15 @@ Guidelines:
     - Copy the .env.template file and rename it as .env.
     - Change the environment variables (from MovieDB)
     - If you change any entity like movie, run this command to update isar: ``` flutter pub run build_runner build```
+
+
+## A little bit of the app
+
+![Example of the app](example.mp4)
+
+## Instalation
+
+1. Clone the repo:
+
+   ```bash
+   git clone https://github.com/sanchezdamianj/cuevanax.git
