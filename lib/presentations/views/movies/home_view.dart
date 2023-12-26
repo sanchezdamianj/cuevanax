@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../providers/providers.dart';
 import '../../widgets/widgets.dart';
-import '../../widgets/shared/custom_appbar.dart';
 
 class HomeView extends ConsumerStatefulWidget {
   const HomeView({super.key});
