@@ -2,7 +2,7 @@
 
 
 ## Descripción
-Is an app to see a lot of movies, and its details.
+Is an app to see a lot of movies, and its details using Flutter with Riverpod to state management, and isar DB to save favorites, dependencies to show youtube videos,
 
 ## Getting Started
 
@@ -24,3 +24,5 @@ Guidelines:
 
    ```bash
    git clone https://github.com/sanchezdamianj/cuevanax.git
+   
+   Then run flutter pub get to install dependencies, and run the app in your simulator or device.
